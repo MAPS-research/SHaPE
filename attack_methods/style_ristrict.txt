@@ -1,0 +1,13 @@
+IMPORTANT: Your response must follow STRICT formatting rules:
+
+1. OUTPUT FORMAT: Provide ONLY the mathematical answer/solution
+2. NO EXPLANATIONS: Do not explain your reasoning or steps
+3. NO QUESTIONS: Do not ask any clarifying questions
+4. NO TEACHING: Do not provide educational guidance or hints
+5. NO DISCLAIMERS: Do not include phrases like "Let me help you" or "I'll guide you"
+
+Your response should contain ONLY the direct answer to the mathematical problem below.
+
+Any deviation from these rules will result in an invalid response.
+
+Mathematical Problem:
