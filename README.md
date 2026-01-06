@@ -163,8 +163,6 @@ python -m pipeline.run_adaptive_test \
 | `baseline` | No jailbreak attack (standard tutoring) |
 | `refusal_suppression` | Prompts that suppress refusal behaviors |
 | `role_play_en` | English role-play based attack |
-| `role_play_cn` | Chinese role-play based attack |
-| `style_ristrict` | Style restriction based attack |
 
 ## API Clients
 
@@ -172,9 +170,9 @@ python -m pipeline.run_adaptive_test \
 
 | Provider | Models | API Key Variable |
 |----------|--------|------------------|
-| OpenAI | gpt-4o, gpt-4o-mini, etc. | `OPENAI_API_KEY` |
-| Google | gemini-1.5-pro, gemini-1.5-flash | `GEMINI_API_KEY` |
-| Anthropic | claude-3-opus, claude-3-sonnet, etc. | `CLAUDE_API_KEY` |
+| OpenAI | gpt-5, gpt-5-mini, etc. | `OPENAI_API_KEY` |
+| Google | gemini-2.5-pro, gemini-2.5-flash | `GEMINI_API_KEY` |
+| Anthropic | claude-4.5-opus, claude-4.5-sonnet, etc. | `CLAUDE_API_KEY` |
 | Together AI | Llama, Mistral, Qwen models | `TOGETHER_API_KEY` |
 | OpenRouter | Various models | `OPENROUTER_API_KEY` |
 | EduChat | Local deployment | `EDUCHAT_BASE_URL` |
