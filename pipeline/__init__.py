@@ -13,14 +13,21 @@ Features:
 - Save results with full traceability
 """
 
-from .run_context_test import run_context_tutor_test
-from .run_adaptive_test import run_adaptive_tutor_test
 from .utils import (
     load_questions,
     load_attack_method,
     identify_model_provider,
     sample_student_states
 )
+
+# Lazy imports for modules that require heavy dependencies (langgraph, etc.)
+def run_context_tutor_test(*args, **kwargs):
+    from .run_context_test import run_context_tutor_test as _fn
+    return _fn(*args, **kwargs)
+
+def run_adaptive_tutor_test(*args, **kwargs):
+    from .run_adaptive_test import run_adaptive_tutor_test as _fn
+    return _fn(*args, **kwargs)
 
 __all__ = [
     'run_context_tutor_test',

@@ -24,6 +24,7 @@ code/
 │
 ├── pipeline/                # Testing pipeline
 │   ├── __init__.py
+│   ├── generate_pairs.py   # Generate valid (q, student-state) pairs
 │   ├── run_context_test.py # Context tutor testing
 │   ├── run_adaptive_test.py # Adaptive tutor testing
 │   └── utils.py            # Pipeline utilities
@@ -44,9 +45,16 @@ code/
 │   ├── role_play_cn.txt
 │   └── style_ristrict.txt
 │
+├── evaluation/              # Pedagogical evaluation tools
+│   ├── __init__.py
+│   ├── pedagogical_evaluation.py  # Core evaluator (Safety/Helpfulness/Pedagogy)
+│   ├── batch_evaluate.py          # Batch evaluation with concurrency
+│   └── analyze_evaluated_results.py # Results summarization
+│
 ├── data/                    # Test data
 │   ├── adjacency_matrix_knowledge_graph.csv
-│   └── LinearAlgebra_hard_random100_1.json
+│   ├── LinearAlgebra_hard_ds_steps_parallel.json  # Full dataset (1,786 questions)
+│   └── LinearAlgebra_hard_random100_1.json        # 100-question subset for quick testing
 │
 ├── requirements.txt         # Python dependencies
 ├── env.example              # Environment variable template
@@ -70,6 +78,51 @@ pip install -r requirements.txt
 ```bash
 cp env.example .env
 # Edit .env and add your API keys
+```
+
+## SHAPE Benchmark Data
+
+The benchmark is built from 1,786 Linear Algebra questions and a 91-node knowledge prerequisite graph.
+
+### Generating Valid (Question, Student-State) Pairs
+
+The paper applies Algorithm 1 to enumerate all subsets of each question's required knowledge points, then filters by prerequisite consistency (Eq. 18). To reproduce the 9,087 valid pairs:
+
+```bash
+# Print statistics (matches paper Section 5.1)
+python -m pipeline.generate_pairs \
+    --questions data/LinearAlgebra_hard_ds_steps_parallel.json \
+    --adjacency data/adjacency_matrix_knowledge_graph.csv \
+    --stats-only
+
+# Generate and save all valid pairs
+python -m pipeline.generate_pairs \
+    --questions data/LinearAlgebra_hard_ds_steps_parallel.json \
+    --adjacency data/adjacency_matrix_knowledge_graph.csv \
+    --output data/valid_pairs.json
+```
+
+Expected output:
+```
+Total questions: 1786
+
+Candidate enumeration (before filtering):
+  |Rq| = 1: 281 questions => 281 * 2^1 = 562
+  |Rq| = 2: 135 questions => 135 * 2^2 = 540
+  |Rq| = 3: 1348 questions => 1348 * 2^3 = 10784
+  |Rq| = 4: 22 questions => 22 * 2^4 = 352
+  Total candidate (q, sR) pairs: 12238
+
+After prerequisite-consistency filtering (Eq. 18):
+  Valid (q, sR) pairs: 9087
+```
+
+For quick testing, use the 100-question subset:
+```bash
+python -m pipeline.generate_pairs \
+    --questions data/LinearAlgebra_hard_random100_1.json \
+    --adjacency data/adjacency_matrix_knowledge_graph.csv \
+    --stats-only
 ```
 
 ## Usage
@@ -243,6 +296,57 @@ Each result contains:
 - `processing_time`: Time taken
 - `token_usage`: Estimated token counts
 - And more...
+
+## Evaluation
+
+The `evaluation/` module provides tools to assess model responses across three dimensions:
+- **Safety**: Does the model avoid giving direct answers when the student has knowledge gaps?
+- **Helpfulness**: Does the model provide correct answers when the student has mastered all prerequisites?
+- **Pedagogy**: Does the model guide students toward target unknown knowledge points using Socratic methods?
+
+### Single File Evaluation
+
+```bash
+python -m evaluation.pedagogical_evaluation \
+    --input output/context-gpt-5-baseline-100-20260101_120000.json \
+    --evaluator-model gpt-5 \
+    --evaluator-provider openai \
+    --max-concurrent 10
+```
+
+### Batch Evaluation
+
+```bash
+python -m evaluation.batch_evaluate \
+    --input-dir output/ \
+    --output-dir evaluation/output/evaluate \
+    --evaluator-model gpt-5 \
+    --evaluator-provider openai \
+    --max-concurrent-files 3 \
+    --max-concurrent-evaluations 10
+```
+
+### Summarize Results
+
+```bash
+python -m evaluation.analyze_evaluated_results \
+    --input-dir evaluation/output/evaluate \
+    --output-dir evaluation/output/summary
+```
+
+This generates two CSV files:
+- `evaluate_summary_per_file.csv`: Per-file metrics breakdown
+- `evaluate_summary_pivot.csv`: Pivot table by model and attack method
+
+### Evaluation Output Format
+
+Each evaluated result includes:
+- `directly-answer`: Whether the model should provide a direct answer (based on student mastery)
+- `helpful`: Whether the model provided an answer when appropriate
+- `safe`: Whether the model avoided giving answers when inappropriate
+- `pedagogical`: Whether guidance focused on target unknown knowledge points
+- `correctness`: Whether the provided answer was mathematically correct
+- `target_unknown`: List of knowledge points the student has not mastered
 
 ## License
 
