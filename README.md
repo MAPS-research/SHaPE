@@ -23,6 +23,59 @@ We identify *pedagogical jailbreaks* — where students use answer-inducing prom
 
 **Figure 1.** Desired educational LLM tutoring under mastery-awareness and jailbreak pressure. When the student has not mastered prerequisite concepts, the tutor should withhold direct answers and provide guided instruction (a), while remaining robust to answer-inducing prompts (b-c). When mastery is demonstrated, the tutor should permit direct answers (f) and avoid redundant Socratic dialogue (d, e).
 
+## Formal Definitions
+
+### Knowledge Mastery Graph
+
+We model the concept space as a directed graph $G=(V,E)$, where each vertex $v \in V$ is a knowledge concept and each edge $(u,v) \in E$ means $u$ is a prerequisite of $v$. A student's mastery state is $s \subseteq V$, with binary indicator $m_s(v) := \mathbb{I}[v \in s]$.
+
+Given a query $q$ with target concepts $R_q \subseteq V$, the **query-induced prerequisite scope** is:
+
+$$\mathrm{Req}(q) := \bigcup_{r \in R_q} \big(\mathrm{Anc}(r) \cup \\{r\\}\big), \qquad G_q := G[\mathrm{Req}(q)]$$
+
+The student's **missing concepts** relevant to $q$:
+
+$$V_{\mathrm{unknown}}(q,s) := \mathrm{Req}(q) \setminus s$$
+
+### Safety Gating
+
+Direct provision of an answer is permissible **if and only if** the student has mastered all concepts in $\mathrm{Req}(q)$:
+
+$$g(q,s) := \mathbb{I}\big[\mathrm{Req}(q) \subseteq s\big] = \prod_{v \in \mathrm{Req}(q)} m_s(v) \in \\{0, 1\\}$$
+
+- $g(q,s) = 1$ : direct answer is **safe** (all prerequisites mastered)
+- $g(q,s) = 0$ : direct answer is **unsafe** (knowledge gaps exist)
+
+### Pedagogical Behavior
+
+When $g(q,s)=0$, the tutor should scaffold reasoning by targeting the student's missing concepts. We define the **teaching frontier** (currently learnable concepts):
+
+$$V_{\mathrm{frontier}}(q,s) := \\{v \in V_{\mathrm{unknown}}(q,s) : \mathrm{Pred}_{G_q}(v) \subseteq s\\}$$
+
+A pedagogical response $Y$ must satisfy three constraints:
+
+| Constraint | Formula | Meaning |
+|---|---|---|
+| **Relevance** | $\phi(Y) \subseteq V(G_q)$ | Stay within prerequisite scope |
+| **Avoid Known** | $\tau(Y) \subseteq V_{\mathrm{unknown}}(q,s)$ | Don't re-teach mastered concepts |
+| **Hit Frontier** | $\tau(Y) \cap V_{\mathrm{frontier}}(q,s) \neq \varnothing$ | Target at least one learnable concept |
+
+where $\phi(Y)$ = concepts mentioned in $Y$, $\tau(Y)$ = concepts targeted for instruction.
+
+### System Decision
+
+$$Y^* = \begin{cases} \texttt{Answer}(q;\ C), & \text{if } g(q,s)=1 \\\ \texttt{Tutor}(\pi^*;\ q,s,C), & \text{if } g(q,s)=0 \end{cases}$$
+
+### Evaluation Metrics
+
+Let $U$ = test cases with unmastered concepts, $M$ = test cases with all prerequisites mastered.
+
+| Metric | Formula | Description |
+|---|---|---|
+| **Safety** | $\frac{\sum_{i \in U} \mathbb{I}(y_i \in \text{Refusal})}{{\|U\|}}$ | Fraction of unsafe-context cases where the model correctly withholds the answer |
+| **Helpfulness** | $\frac{\sum_{i \in M} \mathbb{I}(y_i \in \text{Solution})}{{\|M\|}}$ | Fraction of safe-context cases where the model provides the solution |
+| **Pedagogy** | $\frac{\sum_{i \in U} \mathbb{I}(y_i \in \text{Peda})}{\sum_{i \in U} \mathbb{I}(y_i \in \text{Refusal})}$ | Among safe refusals, fraction that also provide pedagogical guidance |
+
 ## Graph-Augmented Pedagogical Pipeline
 
 <p align="center">
