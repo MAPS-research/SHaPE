@@ -1,10 +1,10 @@
 # SHAPE: Unifying Safety, Helpfulness and Pedagogy for Educational LLMs
 
-[![Paper](https://img.shields.io/badge/Paper-ACL%202026-blue)](TBD)
-[![arXiv](https://img.shields.io/badge/arXiv-TBD-b31b1b.svg)](TBD)
+[![Paper](https://img.shields.io/badge/Paper-ACL%202026-blue)](https://arxiv.org/abs/2604.22134)
+[![arXiv](https://img.shields.io/badge/arXiv-TBD-b31b1b.svg)](https://arxiv.org/abs/2604.22134)
 [![License](https://img.shields.io/badge/License-Research-green)](LICENSE)
 
-> **Paper Link:** [TBD — will be updated upon publication]
+> **Paper Link:** [[ArXiv](https://arxiv.org/abs/2604.22134)]
 
 This is the official code repository for the paper **"SHAPE: Unifying Safety, Helpfulness and Pedagogy for Educational LLMs"**.
 
