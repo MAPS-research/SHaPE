@@ -1,0 +1,47 @@
+{
+  "release_target": "paper_claim_generation",
+  "paper_claim_generation": {
+    "total_questions": 1786,
+    "knowledge_graph_nodes": 91,
+    "knowledge_graph_edges_repo_code_direction": 87,
+    "candidate_pairs_before_filtering": 12238,
+    "valid_student_question_pairs": 9087,
+    "student_has_knowledge_gaps_should_tutor": 7301,
+    "student_mastered_all_kps_should_answer": 1786
+  },
+  "candidate_enumeration_by_required_kp_count": {
+    "1": 281,
+    "2": 135,
+    "3": 1348,
+    "4": 22
+  },
+  "valid_pairs_by_required_kp_count": {
+    "1": 562,
+    "2": 488,
+    "3": 7788,
+    "4": 249
+  },
+  "valid_pairs_by_missing_kp_count": {
+    "0": 1786,
+    "1": 2812,
+    "2": 3051,
+    "3": 1416,
+    "4": 22
+  },
+  "diagnostics_not_release_defining": {
+    "note": "These diagnostics explain why alternate audit counts may appear. They are not used to define the released dataset, which follows paper_claim_generation.",
+    "questions_with_duplicate_step_entries": 85,
+    "extra_duplicate_step_occurrences": 86,
+    "unique_pairs_after_deduping_required_and_missing_sets": 8811,
+    "questions_with_required_kps_not_in_graph": 22,
+    "required_kps_not_in_graph_counts": {
+      "The Matrix of a Linear Transformation Relative to a Basis": 8,
+      "Statements and Predicates": 2,
+      "Sets and Functions": 6,
+      "Classifying Quadratic Curves": 1,
+      "Triangular Matrices": 3,
+      "Jordan Canonical Form of a 2x2 Matrix": 1,
+      "Linear Independence in Abstract Vector Spaces": 1
+    }
+  }
+}
